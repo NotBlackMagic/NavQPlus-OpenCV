@@ -19,9 +19,9 @@ cap_r = cv.VideoCapture('v4l2src device=/dev/video4 ! video/x-raw, framerate={ (
 # out = cv.VideoWriter('C:/Users/fabia/Desktop/test.avi', fourcc, 20.0, (640,  480))
 
 # Load calibration values
-cv_file = cv.FileStorage("improved_params2.xml", cv.FILE_STORAGE_READ)
-Left_Stereo_Map = [	cv_file.getNode("Left_Stereo_Map_x").mat(), cv_file.getNode("Left_Stereo_Map_y").mat()]
-Right_Stereo_Map = [cv_file.getNode("Right_Stereo_Map_x").mat(), cv_file.getNode("Right_Stereo_Map_y").mat()]
+# cv_file = cv.FileStorage("improved_params2.xml", cv.FILE_STORAGE_READ)
+# Left_Stereo_Map = [	cv_file.getNode("Left_Stereo_Map_x").mat(), cv_file.getNode("Left_Stereo_Map_y").mat()]
+# Right_Stereo_Map = [cv_file.getNode("Right_Stereo_Map_x").mat(), cv_file.getNode("Right_Stereo_Map_y").mat()]
 
 # cap = cv.VideoCapture(0)
 if not cap_l.isOpened():
@@ -45,18 +45,18 @@ while cap_l.isOpened() and cap_r.isOpened():
 	# Display the captured frames
 	cv.imshow("Original left frame", frame_l)
 	cv.imshow("Original right frame", frame_r)
-	cv.waitKey(100)
+	# cv.waitKey(100)
 
 	# Camera calibration: https://learnopencv.com/camera-calibration-using-opencv/ and https://learnopencv.com/making-a-low-cost-stereo-camera-using-opencv/
 
 	# Correct images
-	frame_l_corrected= cv.remap(frame_l, Left_Stereo_Map[0], Left_Stereo_Map[1], cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
-	frame_r_corrected= cv.remap(frame_r, Right_Stereo_Map[0], Right_Stereo_Map[1], cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
+	# frame_l_corrected= cv.remap(frame_l, Left_Stereo_Map[0], Left_Stereo_Map[1], cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
+	# frame_r_corrected= cv.remap(frame_r, Right_Stereo_Map[0], Right_Stereo_Map[1], cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
 	# Display the corrected frames
-	cv.imshow("Corrected left frame", frame_l_corrected)
-	cv.imshow("Corrected right frame", frame_r_corrected)
-	cv.waitKey(0)
+	# cv.imshow("Corrected left frame", frame_l_corrected)
+	# cv.imshow("Corrected right frame", frame_r_corrected)
+	# cv.waitKey(0)
 	
 	# Our operations on the frame come here
 	# frame_l = cv.cvtColor(frame1, cv.COLOR_BGR2GRAY)

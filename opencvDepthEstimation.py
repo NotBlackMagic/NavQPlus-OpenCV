@@ -1,5 +1,6 @@
 import numpy as np 
 import cv2 as cv
+import time
  
 # https://nxp.gitbook.io/8mpnavq/dev-guide/software/opencv
 # video/x-raw, format=YUY2, width=2592, height=1944, framerate=8/1
@@ -11,8 +12,8 @@ import cv2 as cv
 # video/x-raw, format=YUY2, width=640, height=480, framerate={ (fraction)15/1, (fraction)30/1 }
 # video/x-raw, format=YUY2, width=320, height=240, framerate={ (fraction)15/1, (fraction)30/1 }
 # video/x-raw, format=YUY2, width=176, height=144, framerate={ (fraction)15/1, (fraction)30/1 }
-cap_l = cv.VideoCapture('v4l2src device=/dev/video3 ! video/x-raw, framerate={ (fraction)15/1, (fraction)30/1 }, width=640, height=480 ! appsink', cv.CAP_GSTREAMER)
-cap_r = cv.VideoCapture('v4l2src device=/dev/video4 ! video/x-raw, framerate={ (fraction)15/1, (fraction)30/1 }, width=640, height=480 ! appsink', cv.CAP_GSTREAMER)
+cap_l = cv.VideoCapture('v4l2src device=/dev/video3 ! video/x-raw, framerate={ (fraction)15/1, (fraction)30/1 }, width=320, height=240 ! appsink', cv.CAP_GSTREAMER)
+cap_r = cv.VideoCapture('v4l2src device=/dev/video4 ! video/x-raw, framerate={ (fraction)15/1, (fraction)30/1 }, width=320, height=240 ! appsink', cv.CAP_GSTREAMER)
 
 # Source: https://learnopencv.com/depth-perception-using-stereo-camera-python-c/
 # Reading the mapping values for stereo image rectification
@@ -45,9 +46,12 @@ cv.createTrackbar('minDisparity', 'disp', 5, 25, nothing)
 stereo = cv.StereoBM_create()
 
 while True:
+	# For frame timing
+	start = time.time()
+	
 	# Capturing and storing left and right camera images
-	ret_l, frame_l= cap_l.read()
-	ret_r, frame_r= cap_r.read()
+	ret_l, frame_l = cap_l.read()
+	ret_r, frame_r = cap_r.read()
 
 	# Proceed only if the frames have been captured
 	if ret_l and ret_r:
@@ -113,7 +117,15 @@ while True:
 
 		# Displaying the disparity map
 		cv.imshow("disp", disparity)
-		cv.imshow("left image", Left_nice)
+		cv.imshow("Left image", frame_l)
+		cv.imshow("Right image", frame_r)
+		
+		# For frame timing
+		end = time.time()
+		delta = (end - start)
+		rate = 1 / delta
+		delta = delta * 1000
+		print("Frame time: %d; Rate: %d" % (delta, rate))
 
 		# Close window using esc key
 		key = cv.waitKey(1)
@@ -124,3 +136,20 @@ while True:
 	else:
 		print("Can't receive frame from camera (stream end?). Exiting ...")
 		break
+
+print("Saving depth estimation parameters ......")
+
+cv_file = cv.FileStorage("../depth_estmation_params_py.xml", cv.FILE_STORAGE_WRITE)
+cv_file.write("numDisparities", numDisparities)
+cv_file.write("blockSize", blockSize)
+cv_file.write("preFilterType", preFilterType)
+cv_file.write("preFilterSize", preFilterSize)
+cv_file.write("preFilterCap", preFilterCap)
+cv_file.write("textureThreshold", textureThreshold)
+cv_file.write("uniquenessRatio", uniquenessRatio)
+cv_file.write("speckleRange", speckleRange)
+cv_file.write("speckleWindowSize", speckleWindowSize)
+cv_file.write("disp12MaxDiff", disp12MaxDiff)
+cv_file.write("minDisparity", minDisparity)
+cv_file.write("M", 39.075)
+cv_file.release()
